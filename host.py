@@ -110,9 +110,9 @@ def main():
 				status('d',J2)
 				status('d',J1)
 			print("Game ended. Prompting clients for a rematch or waiting for another player and restarting...")
-			data = client_getinfo(J1).recv(1)
-			daat = client_getinfo(J2).recv(1)
-			if data == b'y' and data == b'y':
+			dataJ1 = client_getinfo(J1).recv(1)
+			dataJ2 = client_getinfo(J2).recv(1)
+			if dataJ1 == b'y' and dataJ2 == b'y':
 				main()
 		
 
