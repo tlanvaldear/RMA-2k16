@@ -112,7 +112,7 @@ def main():
 			print("Game ended. Prompting clients for a rematch or waiting for another player and restarting...")
 			data = client_getinfo(J1).recv(1)
 			daat = client_getinfo(J2).recv(1)
-			if data == b'y' and daat == b'y':
+			if data == b'y' and data == b'y':
 				main()
 		
 
