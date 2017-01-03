@@ -10,6 +10,8 @@ def me_player():
 	me.connect((argv[1],4402))
 def relog():
 	#TODO
+	return 0
+
 def main():
 	game = True
 	while game == True:
