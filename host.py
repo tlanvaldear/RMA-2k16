@@ -11,7 +11,8 @@ client_socket = []
 #init
 def host_start():
 	host.setsockopt(SOL_SOCKET,SO_REUSEADDR,1)
-	host.bind(('',4402))
+	host.bind((gethostname(),4402))
+	print("Servers up at " + gethostname())
 	host.listen(1)
 	client_select.append(host)
 
@@ -114,6 +115,9 @@ def main():
 			dataJ2 = client_getinfo(J2).recv(1)
 			print(dataJ1,dataJ2)
 			if dataJ1 == b'y' and dataJ2 == b'y':
+				del client_select[:]
+				del client_socket[:]
+				client_select.append(host)
 				main()
 		
 
