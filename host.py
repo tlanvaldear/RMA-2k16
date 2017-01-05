@@ -11,8 +11,12 @@ client_socket = []
 #init
 def host_start():
 	host.setsockopt(SOL_SOCKET,SO_REUSEADDR,1)
-	host.bind((gethostname(),4402))
-	print("Servers up at " + gethostname())
+	try:
+		host.bind((gethostname(),4402))
+		print("Servers up at " + gethostname())
+	except gaierror:
+		host.bind(('',4402))
+		print("Servers up, listening on all interfaces.\n Please ask clients connect to your machine's IP/hostname.\n Local testing can be done using ./client.py ''.")
 	host.listen(1)
 	client_select.append(host)
 
@@ -54,6 +58,10 @@ def waiter():
 	client_select.append(user)
 	add_player(user)
 
+def reset():
+	del client_select[:]
+	del client_socket[:]
+	client_select.append(host)
 
 def main():
 	grids = [grid(), grid(), grid()]
@@ -88,15 +96,31 @@ def main():
 						user.close()
 						delete_user(user) 
 						continue
-		if grids[0].gameOver() == -1:
-			if (grids[0].cells[shot] != EMPTY):
-				grids[current_player].cells[shot] = grids[0].cells[shot]
-				status(str(grids[current_player].cells[shot]),current_player)
-			else:
-				grids[current_player].cells[shot] = current_player
-				grids[0].play(current_player, shot)
-				status(str(grids[current_player].cells[shot]),current_player)
-				current_player = current_player%2+1
+		try:
+			if grids[0].gameOver() == -1:
+				if (grids[0].cells[shot] != EMPTY):
+					grids[current_player].cells[shot] = grids[0].cells[shot]
+					status(str(grids[current_player].cells[shot]),current_player)
+				else:
+					grids[current_player].cells[shot] = current_player
+					grids[0].play(current_player, shot)
+					status(str(grids[current_player].cells[shot]),current_player)
+					current_player = current_player%2+1
+		except AssertionError:
+			try:
+				status('d',J1)
+				data = client_getinfo(J1).recv(1)
+				if data == b'y':
+					print("J1 decided to stay connected while J2 quitted during match.\nWaiting for another player...")
+				reset()
+				main()
+			except (ConnectionResetError,AttributeError):
+				status('d',J2)
+				data = client_getinfo(J2).recv(1)
+				if data == b'y':
+					print("J2 decided to stay connected while J1 quitted during match.\nWaiting for another player...")
+				reset()
+				main()
 		if grids[0].gameOver() != -1:
 			status('e',J1)
 			status('e',J2)
@@ -113,14 +137,31 @@ def main():
 			print("Game ended. Prompting clients for a rematch or waiting for another player and restarting...")
 			dataJ1 = client_getinfo(J1).recv(1)
 			dataJ2 = client_getinfo(J2).recv(1)
-			print(dataJ1,dataJ2)
 			if dataJ1 == b'y' and dataJ2 == b'y':
-				del client_select[:]
-				del client_socket[:]
-				client_select.append(host)
+				reset()
+				main()
+			elif dataJ1 == b'y':
+				#status('o',J1)
+				print("J2 left. looking for another player...")
+				reset()
+				main()
+			elif dataJ2 == b'y':
+				#status('o',J2)
+				print("J1 left. looking for another player...")
+				reset()
+				main()
+			else:
+				reset()
+				print("All players left. Restarting room.")
 				main()
 		
 
 if __name__ == "__main__":
 	host_start()
-	main()
+	try:
+		main()
+	except KeyboardInterrupt:
+		reset()
+		print("\n Server got Ctrl+C'd by it's meanie administrator.")
+		host.close()
+		quit(0)

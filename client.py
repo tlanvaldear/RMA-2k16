@@ -5,10 +5,12 @@ from grid import *
 from random import *
 
 
-grille = grid()
+
 def init():
 	global me
 	me = socket(AF_INET6,SOCK_STREAM,0)
+	global grille
+	grille = grid()
 
 def me_player():
 	global me
@@ -19,8 +21,7 @@ def me_player():
 
 def relog():
 	me.send('y'.encode())
-	init()
-	me_player()
+	me.close()
 	return 0
 
 def vs_ia():
@@ -65,7 +66,7 @@ def main():
 			else:
 				vsia = False
 	else:
-		if input("Voulez-vous jouer en réseau ? [O/N]").lower() == 'n':
+		if input("Voulez-vous jouer en réseau ? [O/N]").lower() != 'o':
 			quit(0)
 		else:
 			reseau = True
@@ -79,6 +80,18 @@ def main():
 			if len(data) == 1:
 				if data == b'y':
 					fiyerd = True
+				elif data == b'd':
+					print("L'adversaire a abandonné.")
+					try:
+						if input("Voulez-vous rejouer? [O/N]").lower() == 'o':
+							relog()
+							main()
+						else:
+							quit(0)
+					except (EOFError):
+						print("Non, là, il fallait entrer soit O, soit N. Pas faire le malin avec son Ctrl+D.")
+						me.close()
+						quit(0)
 				else:
 					game = False #Because it ended, get out of the loop
 			if fiyerd:
@@ -102,6 +115,18 @@ def main():
 					grille.cells[int(me_attack)] = int(ans)
 				else:
 					game = False #Issues happened, the game closed.
+					if ans == b'd':
+						print("L'adversaire a abandonné.")
+						try:
+							if input("Voulez-vous rejouer? [O/N]").lower() == 'o':
+								relog()
+								main()
+							else:
+								quit(0)
+						except (EOFError):
+							print("Non, là, il fallait entrer soit O, soit N. Pas faire le malin avec son Ctrl+D.")
+							me.close()
+							quit(0)
 		data = me.recv(1)
 		try:
 			if data == b'w':
@@ -111,22 +136,34 @@ def main():
 				if input("Voulez-vous rejouer? [O/N]").lower() == 'o':
 					relog()
 					main()
+				else:
+					quit(0)
 			elif data == b'l':
 				print("Loser.")
 				if input("Voulez-vous rejouer? [O/N]").lower() == 'o':
 					relog()
 					main()
+				else:
+					quit(0)
 			elif data == b'd':
 				print("Match nul !")
 				if input("Voulez-vous rejouer? [O/N]").lower() == 'o':
 					relog()
 					main()
+				else:
+					quit(0)
 		except (EOFError):
 			print("Non, là, il fallait entrer soit O, soit N. Pas EOF.")
 			me.close()
 			quit(0)
+	else:
+		quit(0)
 
 
 
 if __name__ == '__main__':
-	main()
+	try:
+		main()
+	except KeyboardInterrupt:
+		print("\nSale lâcheur.")
+		quit(0)
