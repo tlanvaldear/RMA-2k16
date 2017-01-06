@@ -14,6 +14,7 @@ The game ends when either :
 > One of the players completed a line without being interrupted by the other (horizontal, diagonal, vertical)
 
 > The board is filled up (Draw)
+
 #### Addons
 Players can disconnect during game.
 Players can replay without having to reconnect manually
