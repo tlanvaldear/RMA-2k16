@@ -115,12 +115,16 @@ def main():
 				reset()
 				main()
 			except (ConnectionResetError,AttributeError):
-				status('d',J2)
-				data = client_getinfo(J2).recv(1)
-				if data == b'y':
-					print("J2 decided to stay connected while J1 quitted during match.\nWaiting for another player...")
-				reset()
-				main()
+				try:
+					status('d',J2)
+					data = client_getinfo(J2).recv(1)
+					if data == b'y':
+						print("J2 decided to stay connected while J1 quitted during match.\nWaiting for another player...")
+					reset()
+					main()
+				except (ConnectionResetError,AttributeError):
+					reset()
+					main()
 		if grids[0].gameOver() != -1:
 			status('e',J1)
 			status('e',J2)
