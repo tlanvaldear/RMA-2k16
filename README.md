@@ -17,9 +17,13 @@ The game ends when either :
 
 #### Addons
 Players can disconnect during game.
+
 Players can replay without having to reconnect manually
+
 Players can play online or against an AI directly from the same executable
 # How To Use
-Execute `./host.py` to start hosting.
+Execute `./main.py` without args to start hosting.
 
-Execute two instances of `./client.py` that connect to host's ip/hostname.
+Execute two instances of `./main.py` that connect to host's ip/hostname with this ip/hostname as argument.
+
+You can also use host.py to start hosting and client.py to connect.
