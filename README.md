@@ -14,10 +14,11 @@ The game ends when either :
 > One of the players completed a line without being interrupted by the other (horizontal, diagonal, vertical)
 
 > The board is filled up (Draw)
-
+#### Addons
+Players can disconnect during game.
+Players can replay without having to reconnect manually
+Players can play online or against an AI directly from the same executable
 # How To Use
-Execute`./main.py` to play Version 1.
-## V2.
-Execute `./host.py` to start hosting in localhost.
+Execute `./host.py` to start hosting.
 
-Execute two instances of `./client.py` that connect to `''` , meaning `localhost` in order to start a game
+Execute two instances of `./client.py` that connect to host's ip/hostname.
