@@ -8,7 +8,7 @@ from random import *
 
 def init():
 	global me
-	me = socket(AF_INET6,SOCK_STREAM,0)
+	me = socket(AF_INET,SOCK_STREAM,0)
 	global grille
 	grille = grid()
 

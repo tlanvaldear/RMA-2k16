@@ -4,7 +4,7 @@ from socket import *
 import select
 
 
-host = socket(AF_INET6,SOCK_STREAM,0)
+host = socket(AF_INET,SOCK_STREAM,0)
 client_select = [] 
 client_socket = []
 
