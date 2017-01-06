@@ -12,8 +12,8 @@ client_socket = []
 def host_start():
 	host.setsockopt(SOL_SOCKET,SO_REUSEADDR,1)
 	try:
-		host.bind((gethostname(),4402))
-		print("Servers up at " + gethostname())
+		host.bind((gethostbyname(gethostname()),4402))
+		print("Servers up at ( hostname = " + gethostname()+ " )"+gethostbyname(gethostname()) + ".\n You can connect using either of those as argument for the client.")
 	except gaierror:
 		host.bind(('',4402))
 		print("Servers up, listening on all interfaces.\n Please ask clients connect to your machine's IP/hostname.\n Local testing can be done using ./client.py ''.")
